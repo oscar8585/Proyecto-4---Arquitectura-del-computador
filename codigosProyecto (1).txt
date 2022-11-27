@@ -1,0 +1,124 @@
+Algoritmo de Booth
+
+LOAD										Binario
+	load _Q-1:	MOV 	ACC, CTE					0b0000000
+			Q-1
+			MOV	DPTR, ACC					0b0000000	
+			MOV	ACC, [DPTR]					0b0000000									
+			MOV	AVI, ACC					0b0000000
+	load_Q:	MOV	ACC, CTE					0b0000000
+			Q
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			MOV	A, ACC					0b0000000
+			MOV	ACC, CTE					0b0000000
+			0x01			
+			AND	ACC, A    					0b0001000 
+			MOV 	A, ACC					0b0000000
+			MOV	ACC, AVI					0b0000000
+			XOR	ACC, A        				0b0001010
+			JZ	CTE						0b1100000						
+			EQUAL		
+			MOV	ACC, CTE					0b0000000
+			0x01
+			AND	ACC, A          				0b0001000
+			JZ	CTE						0b1100000
+			ADDITION         
+			JMP	CTE						0b1110000
+			SUBTRACTION        	
+
+EQUAL			
+	load_b:	MOV	ACC, CTE 					0b0000000       
+			B
+			MOV	DPTR, ACC					0b0000000
+			JMP	CTE						0b1110000
+			SHIFT
+
+SUBTRACTION			
+	load_m:	MOV 	ACC, CTE					0b0000000
+M
+			MOV	DPTR, ACC					0b0000000	
+			MOV	ACC, [DPTR]					0b0000000
+	neg_m:	INV	ACC						0b0000001	
+			MOV	A, ACC					0b0000000
+			MOV	ACC, CTE					0b0000000
+			0x01
+			ADD	ACC, A					0b0000010
+			MOV	A, ACC					0b0000000
+	load_b:	MOV	ACC, CTE					0b0000000
+			B
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			ADD	ACC, A					0b0000010
+	store_b:	MOV 	[DPTR], ACC					0b0000000
+			JMP	CTE						0b1110000
+			SHIFT
+
+ADDITION					
+	load_m:	MOV	ACC, CTE					0b0000000
+M
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			MOV	A, ACC					0b0000000
+	load_b:	MOV	ACC, CTE					0b0000000
+B
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			ADD	ACC, A					0b0000010
+	store_b	MOV	[DPTR], ACC					0b0000000
+			JMP	CTE						0b1110000
+			SHIFT
+			
+SHIFT
+	load_b:	MOV	ACC, [DPTR]					0b0000000
+			MOV	A, ACC					0b0000000
+	load_cte:	MOV	ACC, CTE					0b0000000
+			1x00			
+			AND	ACC, A					0b0001000   
+			MOV	cte1, ACC	  				0b0000000
+			MOV	ACC, CTE					0b0000000
+			0x01
+			AND	ACC, A	  				0b0001000
+			MOV	TEMP, ACC	     				0b0000000
+			MOV	ACC, A					0b0000000
+			SHR	ACC		   				0b0001101
+	store_b:	MOV	[DPTR], ACC   				0b0000000
+			MOV	ACC, TEMP	    				0b0000000
+			MOV	cte1, ACC	  				0b0000000
+	load_q:	MOV	ACC, CTE					
+			Q
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			MOV	A, ACC					0b0000000
+			MOV	ACC, CTE					0b0000000
+			0x01
+			AND	ACC, A 	   				0b0001000
+			MOV	AVI, ACC	    				0b0000000
+			MOV	ACC, A					0b0000000
+			SHR	ACC 						0b0001101
+			MOV	[DPTR], ACC					0b0000000
+			MOV	ACC, CTE	    				0b0000000
+			Q-1
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, AVI					0b0000000
+			MOV	[DPTR], ACC	  				0b0000000
+			JMP	CTE						0b1110000
+			CALCULATE_COUNT
+
+CALCULATE_COUNT:	
+	load_count:	MOV	ACC, CTE					0b0000000
+			COUNT
+			MOV	DPTR, ACC					0b0000000
+			MOV	ACC, [DPTR]					0b0000000
+			MOV	A, ACC					0b0000000
+			MOV	ACC, CTE					0b0000000
+			0x01
+			INV	ACC						0b0000001
+			ADD	ACC, A					0b0000010
+			MOV	[DPTR], ACC					0b0000000
+			JZ	CTE						0b1100000
+			END
+			JMP	CTE						0b1110000
+			LOAD							0b0010000
+
+END_PROGRAM:
